@@ -6,7 +6,6 @@
 """
 import json
 
-from hashlib import md5
 from functools import reduce
 
 from ._textFileHandler import TextFileHandler

@@ -53,6 +53,5 @@ class FileSplit(object):
                 if flag:
                     break
                 buf = self._fp.read(2048)
-
             yield start, end
         self._fp.close()
