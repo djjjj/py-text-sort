@@ -24,7 +24,8 @@ class Case1(object):
         for f in cls.CASE_FILES:
             for block_size in cls.CASE_BLOCK_SIZE:
                 for p_num in cls.CASE_PROCESS_NUM:
-                    FileSort(f, '%s-sorted' % f, handler, block_size, '\n', p_num)
+                    fs = FileSort(f, '%s-sorted' % f, handler, block_size, '\n', p_num)
+                    fs.run()
 
 
 if __name__ == '__main__':
