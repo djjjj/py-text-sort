@@ -4,9 +4,9 @@
     hack by djj -_,- | good luck!
     date: 2018-03-02
 """
-from os.path import getsize
-
 import sys
+
+from ._utils import get_file_size
 
 
 if sys.version_info < (3, 0):
@@ -39,7 +39,7 @@ class FileSplit(object):
         self._ret = []
         self._fp = open(in_file_path, 'rb')
         self._delimiter = handle_delimiter(delimiter)
-        self._size = getsize(in_file_path)
+        self._size = get_file_size(in_file_path)
         self._split_num = self._size // block_size + 1
         assert self._split_num <= 1024
 
