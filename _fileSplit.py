@@ -6,6 +6,15 @@
 """
 from os.path import getsize
 
+import sys
+
+
+if sys.version_info < (3, 0):
+    str = lambda x, y: x.encode(y, 'ignore')
+    handle_delimiter = lambda x: x
+else:
+    handle_delimiter = lambda x: ord(x)
+
 
 class SubFile(object):
     def __init__(self, file_path, start, end):
@@ -18,7 +27,7 @@ class SubFile(object):
         line = self._fp.readline()
         self._len -= len(line)
         while self._len >= 0 and line:
-            yield str(line, encoding='utf8')
+            yield str(line, 'utf8')
             line = self._fp.readline()
             self._len -= len(line)
         self._fp.close()
@@ -29,7 +38,7 @@ class FileSplit(object):
     def __init__(self, in_file_path, block_size, delimiter):
         self._ret = []
         self._fp = open(in_file_path, 'rb')
-        self._delimiter = ord(delimiter)
+        self._delimiter = handle_delimiter(delimiter)
         self._size = getsize(in_file_path)
         self._split_num = self._size // block_size + 1
         assert self._split_num <= 1024

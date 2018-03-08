@@ -11,8 +11,23 @@ import shutil
 
 from multiprocessing import Manager, Pool
 
-from handler import TextFileHandler
 from _fileSplit import FileSplit, SubFile
+
+
+import sys
+
+if sys.version_info < (3, 0):
+    import types
+    import copy_reg
+
+
+    def _pickle_method(m):
+        if m.im_self is None:
+            return getattr, (m.im_class, m.im_func.func_name)
+        else:
+            return getattr, (m.im_self, m.im_func.func_name)
+
+    copy_reg.pickle(types.MethodType, _pickle_method)
 
 
 class FileSort(object):
@@ -23,7 +38,7 @@ class FileSort(object):
             self,
             in_file_path,
             out_file_path,
-            file_handler: TextFileHandler,
+            file_handler,
             block_size,
             delimiter,
             process_num):
@@ -37,10 +52,6 @@ class FileSort(object):
         self._tmp_files = Manager().list()
         self._count = Manager().Value('i', -1)
 
-    @staticmethod
-    def _err_call(e):
-        print(e)
-
     def run(self):
         self._split()
         while self._count.value != 0:
@@ -52,8 +63,7 @@ class FileSort(object):
                     (left_file, right_file, self._gen_tmp_file(
                         left_file[left_file.rfind('s_')+2:],
                         right_file[right_file.rfind('s_')+2:]
-                    )),
-                    callback=self._err_call
+                    ))
                 )
             time.sleep(0.3)
         self._p_pool.close()
@@ -71,10 +81,9 @@ class FileSort(object):
         count = 0
         for fp_start, fp_end in fs:
             f_name = self._gen_tmp_file(str(fp_start), str(fp_end))
-            self._p_pool.apply_async(
+            self._p_pool.apply(
                 self._save_block,
-                (fp_start, fp_end, f_name,),
-                error_callback=self._err_call
+                (fp_start, fp_end, f_name,)
             )
             count += 1
         self._count.value += count

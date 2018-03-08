@@ -25,6 +25,7 @@ class JsonFileHandler(TextFileHandler):
             ).encode('utf8'), self._keys, '')
         except ValueError:
             print('expect a string of dict type: %s' % val)
+            raise ValueError()
         except AttributeError:
             print('expect a string of dict type: %s' % val)
         return key
