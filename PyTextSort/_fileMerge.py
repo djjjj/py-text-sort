@@ -18,8 +18,8 @@ def merge(in_f, out_f, handler, merge_func=lambda dic1, dic2: dict(dic1, **dic2)
             cur_line_dic = line_data
             continue
         cur_line_dic = merge_func(cur_line_dic, line_data)
-    out_f.write('%s\n' % handler.row_encode(cur_line_dic))
-    out_f.close()
+    out_fp.write('%s\n' % handler.row_encode(cur_line_dic))
+    out_fp.close()
 
 
 def merge_func1(dic1, dic2):
