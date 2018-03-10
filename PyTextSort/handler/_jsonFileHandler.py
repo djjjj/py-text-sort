@@ -43,3 +43,20 @@ class JsonFileHandler(TextFileHandler):
     @staticmethod
     def row_decode(val):
         return json.dumps(val, ensure_ascii=False)
+
+    @staticmethod
+    def row_merge(dic1, dic2):
+        for k, v in dic1.items():
+            if v and isinstance(v, list):
+                vals = dic2.get(k, []) or []
+                if isinstance(v[0], dict):
+                    tmp_vals = [_ for _ in v if _ not in vals]
+                    vals += tmp_vals
+                else:
+                    vals = list(set(vals + v))
+                dic2[k] = vals
+            elif v is None or (isinstance(v, (dict, list)) and len(v) == 0):
+                continue
+            else:
+                dic2[k] = v
+        return dic2

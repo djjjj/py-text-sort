@@ -4,10 +4,9 @@
     hack by djj -_,- | good luck!
     date: 2018-03-02
 """
-from ._fileSort import FileSort
+from ._fileSort import FileSort, FileMerge
 from .handler import TextFileHandler
 from .handler import JsonFileHandler
-from ._fileMerge import merge, merge_func1
 
 
 __all__ = ('JsonFileHandler', 'TextFileHandler', 'sort_json_file', 'sort_file')
@@ -19,7 +18,8 @@ def sort_file(
         file_handler=None,
         row_delimiter='\n',
         block_size=None,
-        p_num=None):
+        p_num=None,
+        merge=False):
     """
 
     :param input_file:
@@ -28,6 +28,7 @@ def sort_file(
     :param row_delimiter: 行分割符
     :param block_size: 分块大小
     :param p_num: 进程数量
+    :param merge: 是否用keys合并
     :return:
     """
     from ._utils import get_CPU_core_num
@@ -39,8 +40,12 @@ def sort_file(
     if file_handler is None:
         file_handler = TextFileHandler()
 
-    fs = FileSort(
-        input_file, output_file, file_handler, block_size, row_delimiter, p_num)
+    if merge:
+        fs = FileMerge(
+            input_file, output_file, file_handler, block_size, row_delimiter, p_num)
+    else:
+        fs = FileSort(
+            input_file, output_file, file_handler, block_size, row_delimiter, p_num)
     fs.run()
 
 
@@ -64,7 +69,5 @@ def merge_json_file(
         block_size=None,
         p_num=None):
 
-    tmp_sort_file = '%s.sorted' % output_file
     j_handler = JsonFileHandler(merge_keys)
-    sort_file(input_file, tmp_sort_file, j_handler, row_delimiter, block_size, p_num)
-    merge(tmp_sort_file, output_file, j_handler, merge_func1)
+    sort_file(input_file, output_file, j_handler, row_delimiter, block_size, p_num, True)

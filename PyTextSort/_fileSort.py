@@ -96,8 +96,7 @@ class FileSort(object):
                 [_ for _ in sub_file],
                 key=lambda x: self._handler.row_key(x)
             )
-            for line in sorted_lines:
-                out.write(line)
+            out.write('%s' % '\n'.join(sorted_lines))
         self._tmp_files.append(out_file)
 
     def _merge_sort(self, left_file, right_file, out_file):
@@ -148,3 +147,76 @@ class FileSort(object):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
+
+
+class FileMerge(FileSort):
+
+    FILE_PREFIX = '.~file_merge'
+
+    def _save_block(self, start, end, out_file):
+        sub_file = SubFile(self._in, start, end)
+        with open(out_file, 'w') as out:
+            sorted_lines = sorted(
+                [self._handler.row_encode(_) for _ in sub_file],
+                key=lambda x: self._handler.row_key_plus(x)
+            )
+            merged_lines = self._merge(iter(sorted_lines))
+            out.write('%s\n' % '\n'.join(merged_lines))
+        self._tmp_files.append(out_file)
+
+    def _merge(self, _in):
+        ret = []
+        cur_line_dic = next(_in)
+        for line_data in _in:
+            if self._handler.row_key_plus(line_data) != self._handler.row_key_plus(cur_line_dic):
+                ret.append(self._handler.row_decode(cur_line_dic))
+                cur_line_dic = line_data
+            else:
+                cur_line_dic = self._handler.row_merge(cur_line_dic, line_data)
+        ret.append(self._handler.row_decode(cur_line_dic))
+        return ret
+
+    def _merge_sort(self, left_file, right_file, out_file):
+        with open(out_file, 'w') as out, \
+                open(left_file) as left, \
+                open(right_file) as right:
+            l_line = left.readline()
+            r_line = right.readline()
+            l_key = self._handler.row_key(l_line)
+            r_key = self._handler.row_key(r_line)
+            while l_line and r_line:
+                if l_key < r_key:
+                    while l_line:
+                        l_key = self._handler.row_key(l_line)
+                        if l_key >= r_key:
+                            break
+                        out.write(l_line)
+                        l_line = left.readline()
+                elif l_key > r_key:
+                    while r_line:
+                        r_key = self._handler.row_key(r_line)
+                        if l_key <= r_key:
+                            break
+                        out.write(r_line)
+                        r_line = right.readline()
+                elif l_key == r_key:
+                    l_line = self._handler.row_decode(
+                        self._handler.row_merge(
+                            self._handler.row_encode(l_line),
+                            self._handler.row_encode(r_line)
+                        )
+                    ) + '\n'
+                    r_line = right.readline()
+                    if r_line:
+                        r_key = self._handler.row_key(r_line)
+
+            while l_line:
+                out.write(l_line)
+                l_line = left.readline()
+            while r_line:
+                out.write(r_line)
+                r_line = right.readline()
+        os.remove(left_file)
+        os.remove(right_file)
+        self._tmp_files.append(out_file)
+        self._count.value -= 1
