@@ -39,8 +39,9 @@ def sort_file(
     if file_handler is None:
         file_handler = TextFileHandler()
 
-    FileSort(
+    fs = FileSort(
         input_file, output_file, file_handler, block_size, row_delimiter, p_num)
+    fs.run()
 
 
 def sort_json_file(
@@ -65,5 +66,5 @@ def merge_json_file(
 
     tmp_sort_file = '%s.sorted' % output_file
     j_handler = JsonFileHandler(merge_keys)
-    sort_file(input_file, output_file, j_handler, row_delimiter, block_size, p_num)
+    sort_file(input_file, tmp_sort_file, j_handler, row_delimiter, block_size, p_num)
     merge(tmp_sort_file, output_file, j_handler, merge_func1)

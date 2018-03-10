@@ -19,7 +19,8 @@ import sys
 if sys.version_info < (3, 0):
     import types
     import copy_reg
-
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 
     def _pickle_method(m):
         if m.im_self is None:
