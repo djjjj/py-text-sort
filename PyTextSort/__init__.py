@@ -7,6 +7,7 @@
 from ._fileSort import FileSort
 from .handler import TextFileHandler
 from .handler import JsonFileHandler
+from ._fileMerge import merge, merge_func1
 
 
 __all__ = ('JsonFileHandler', 'TextFileHandler', 'sort_json_file', 'sort_file')
@@ -52,3 +53,17 @@ def sort_json_file(
 
     j_handler = JsonFileHandler(sort_keys)
     sort_file(input_file, output_file, j_handler, row_delimiter, block_size, p_num)
+
+
+def merge_json_file(
+        input_file,
+        output_file,
+        merge_keys,
+        row_delimiter='\n',
+        block_size=None,
+        p_num=None):
+
+    tmp_sort_file = '%s.sorted' % output_file
+    j_handler = JsonFileHandler(merge_keys)
+    sort_file(input_file, output_file, j_handler, row_delimiter, block_size, p_num)
+    merge(tmp_sort_file, output_file, j_handler, merge_func1)
