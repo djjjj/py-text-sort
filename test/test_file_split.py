@@ -6,7 +6,7 @@
 """
 import os
 
-from _fileSplit import FileSplit, SubFile
+from PyTextSort._fileSplit import FileSplit, SubFile
 
 
 CASE_DIR = os.path.join(os.path.dirname(__file__), 'case_file_split')
@@ -35,7 +35,7 @@ class Case1(object):
                     out = open('%s-%s-%s-%s' % (f, block_size, start, end), 'w')
                     count = 0
                     for line in SubFile(f, start, end):
-                        out.write(str(line, encoding='utf8'))
+                        out.write(line)
                         count += 1
                     assert count == cls.CASE_RESULT[j]
                     j += 1

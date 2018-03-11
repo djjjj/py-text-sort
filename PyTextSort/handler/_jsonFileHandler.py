@@ -28,7 +28,7 @@ class JsonFileHandler(TextFileHandler):
                 '%s%s' % (_str, dic.get(field, ''))
             ).encode('utf8'), self._keys, '')
         except AttributeError:
-            print('expect a string of dict type: %s' % dic)
+            print(('expect a string of dict type: %s' % dic)[:200])
         return key
 
     @staticmethod
@@ -37,7 +37,7 @@ class JsonFileHandler(TextFileHandler):
         try:
             line = json.loads(val)
         except ValueError:
-            print('expect a string of dict type: %s' % val)
+            print(('expect a string of dict type: %s' % dic)[:200])
         return line
 
     @staticmethod
