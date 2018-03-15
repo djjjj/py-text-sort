@@ -6,8 +6,8 @@
 """
 import os
 
-from _fileSort import FileSort
-from handler import JsonFileHandler
+from PyTextSort._fileSort import FileSort
+from PyTextSort.handler import JsonFileHandler
 
 
 CASE_DIR = os.path.join(os.path.dirname(__file__), 'case_file_sort')

@@ -96,7 +96,7 @@ class FileSort(object):
                 [_ for _ in sub_file],
                 key=lambda x: self._handler.row_key(x)
             )
-            out.write('%s' % '\n'.join(sorted_lines))
+            out.write('%s' % ''.join(sorted_lines))
         self._tmp_files.append(out_file)
 
     def _merge_sort(self, left_file, right_file, out_file):
