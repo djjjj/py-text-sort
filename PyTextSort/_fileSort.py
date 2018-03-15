@@ -59,11 +59,11 @@ class FileSort(object):
             if len(self._tmp_files) > 1:
                 left_file = self._tmp_files.pop()
                 right_file = self._tmp_files.pop()
-                self._p_pool.apply_async(
+                self._p_pool.apply(
                     self._merge_sort,
                     (left_file, right_file, self._gen_tmp_file(
-                        left_file[left_file.rfind('s_')+2:],
-                        right_file[right_file.rfind('s_')+2:]
+                        left_file[left_file.rfind('_')+1:],
+                        right_file[right_file.rfind('_')+1:]
                     ))
                 )
             time.sleep(0.3)
